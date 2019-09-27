@@ -17,11 +17,11 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+app.use('/bookmarks', bookmarksRouter);
+
 app.get('/', ( req, res ) => {
   res.send('Hello world!');
 });
-
-app.get('/bookmarks', bookmarksRouter);
 
 app.use(function errorHandler( error, req, res, next ) {
   let response;
