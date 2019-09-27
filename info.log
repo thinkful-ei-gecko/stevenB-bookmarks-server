@@ -15,3 +15,8 @@
 {"message":"Bookmark with id 4 not found.","level":"error"}
 {"message":"Unauthorized request received","level":"error"}
 {"message":"Unauthorized request received","level":"error"}
+{"message":"Bookmarks data accessed","level":"info"}
+{"message":"Bookmark with id 1b505b5a-335e-4fd9-bd0b-e60a3795e5f6 created","level":"info"}
+{"message":"Bookmarks data accessed","level":"info"}
+{"message":"Bookmark with id 1 deleted.","level":"info"}
+{"message":"Bookmarks data accessed","level":"info"}
