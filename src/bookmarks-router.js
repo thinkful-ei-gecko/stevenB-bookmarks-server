@@ -1,7 +1,7 @@
 const express = require('express');
 const uuid = require('uuid/v4');
 
-const PORT = require('./server');
+const { PORT } = require('./config');
 const [ ...bookmarks ] = require('./dataStore');
 const logger = require('./logger');
 
