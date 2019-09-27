@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
+const logger = require('./logger');
 const bookmarksRouter = require('./bookmarks-router');
 
 const app = express();
@@ -28,7 +29,7 @@ app.use(function errorHandler( error, req, res, next ) {
   if(NODE_ENV === 'production') {
     response = { error: { message: 'server error' } };
   } else {
-    console.error(error);
+    logger.error(error);
     response = { message: error.message, error };
   }
   res.status(500).json(response);
