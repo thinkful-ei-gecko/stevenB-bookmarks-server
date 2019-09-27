@@ -22,4 +22,8 @@ bookmarksRouter.get('/:id', ( req, res ) => {
   res.send(searchBookmark);
 });
 
+bookmarksRouter.post('/', ( req, res ) => {
+  
+});
+
 module.exports = bookmarksRouter;

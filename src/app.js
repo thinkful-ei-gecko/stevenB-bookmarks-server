@@ -18,6 +18,18 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+app.use(function validateBearerToken( req, res, next) {
+  const authToken = process.env.API_TOKEN;
+  const userToken = req.get('Authorization');
+
+  if (!userToken || userToken.split(' ')[1] !== authToken) {
+    logger.error('Unauthorized request received');
+    return res.status(401).json({ error: 'Unauthorized request '});
+  }
+
+  next();
+});
+
 app.use('/bookmarks', bookmarksRouter);
 
 app.get('/', ( req, res ) => {

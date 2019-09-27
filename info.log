@@ -12,3 +12,6 @@
 {"message":"Bookmarks data accessed","level":"info"}
 {"message":"Bookmarks data accessed","level":"info"}
 {"message":"Bookmark with id 4 not found.","level":"error"}
+{"message":"Bookmark with id 4 not found.","level":"error"}
+{"message":"Unauthorized request received","level":"error"}
+{"message":"Unauthorized request received","level":"error"}
