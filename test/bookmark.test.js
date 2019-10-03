@@ -18,9 +18,9 @@ describe('Bookmarks endpoints', () => {
 
   afterEach('cleanup', () => db('bookmark_items').truncate() );
 
-  it('GET / responds with 200 containing Hello world!', () => {
+  it('GET / responds with 200 containing Hello World!', () => {
     return supertest(app)
       .get('/')
-      .expect(200, 'Hello world!');
+      .expect(200, 'Hello World!');
   });
 });

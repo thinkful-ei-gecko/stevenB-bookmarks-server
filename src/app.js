@@ -32,6 +32,10 @@ app.use(express.json());
 
 app.use('/bookmarks', bookmarksRouter);
 
+app.get('/', ( req, res, next ) => {
+  res.send('Hello World!');
+});
+
 app.use(function errorHandler( error, req, res, next ) {
   let response;
   if(NODE_ENV === 'production') {
