@@ -54,7 +54,26 @@ describe('Bookmarks endpoints', () => {
   });
 
   context('/POST request', () => {
+    it('creates an article, responds with 201 and the new bookmark', () => {
+      const newBookmark = {
+        title: 'Test Post',
+        url: 'https://www.imatest.com',
+        description: 'Hello I am a test',
+        rating: '3'
+      };
 
+      return supertest(app)
+        .post('/bookmarks')
+        .send(newBookmark)
+        .expect(201)
+        .expect( res => {
+          expect(res.body.title).to.eql(newBookmark.title);
+          expect(res.body.url).to.eql(newBookmark.url);
+          expect(res.body.description).to.eql(newBookmark.description);
+          expect(res.body.rating).to.eql(newBookmark.rating);
+          expect(res.body).to.have.property('id');
+        });
+    });
   });
 
   context('/DELETE request', () => {
