@@ -6,7 +6,6 @@ const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
 const logger = require('./logger');
 const bookmarksRouter = require('./bookmarks-router');
-const BookmarksService = require('./bookmarks-service');
 
 const app = express();
 
@@ -32,13 +31,6 @@ app.use(express.json());
 }); */
 
 app.use('/bookmarks', bookmarksRouter);
-
-app.get('/', ( req, res, next ) => {
-  const knexInstance = req.app.get('db');
-  BookmarksService.getAllBookmarks(knexInstance)
-    .then( bookmarks => res.json(bookmarks) )
-    .catch(next);
-});
 
 app.use(function errorHandler( error, req, res, next ) {
   let response;

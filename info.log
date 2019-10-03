@@ -26,3 +26,5 @@
 {"message":"Unauthorized request received","level":"error"}
 {"message":"Unauthorized request received","level":"error"}
 {"message":"Unauthorized request received","level":"error"}
+{"message":"Bookmarks data accessed","level":"info"}
+{"message":"Bookmarks data accessed!","level":"info"}

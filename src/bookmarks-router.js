@@ -6,10 +6,14 @@ const [ ...bookmarks ] = require('./dataStore');
 const logger = require('./logger');
 
 const bookmarksRouter = express.Router();
+const BookmarksService = require('./bookmarks-service');
 
-bookmarksRouter.get('/', ( req, res ) => {
-  logger.info('Bookmarks data accessed');
-  res.send(bookmarks);
+bookmarksRouter.get('/', ( req, res, next ) => {
+  logger.info('Bookmarks data accessed!');
+  const knexInstance = req.app.get('db');
+  BookmarksService.getAllBookmarks(knexInstance)
+    .then( bookmarks => res.json(bookmarks) )
+    .catch(next);
 });
 
 bookmarksRouter.get('/:id', ( req, res ) => {
