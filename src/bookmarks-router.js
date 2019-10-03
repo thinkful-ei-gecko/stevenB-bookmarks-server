@@ -19,12 +19,12 @@ bookmarksRouter.get('/', ( req, res, next ) => {
 bookmarksRouter.get('/:id', ( req, res, next ) => {
   const knexInstance = req.app.get('db');
   const { id } = req.params;
-  
+
   BookmarksService.getById(knexInstance, id)
     .then( bookmark => {
       if ( !bookmark ) {
         logger.error(`Bookmark with id ${id} not found.`);
-        return res.status(404).send('Bookmark Not Found');
+        return res.status(404).json({ error: { message: 'Bookmark with id 20 not found.' } });
       }
       res.json( bookmark );
     })
