@@ -31,7 +31,7 @@ bookmarksRouter.get('/:id', ( req, res, next ) => {
     .catch(next);
 });
 
-bookmarksRouter.post('/', ( req, res ) => {
+bookmarksRouter.post('/', ( req, res, next ) => {
   const { title, url, description, rating } = req.body;
 
   if ( !title ) {
