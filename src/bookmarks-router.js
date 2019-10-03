@@ -36,17 +36,17 @@ bookmarksRouter.post('/', ( req, res ) => {
 
   if ( !title ) {
     logger.error('Title is required');
-    return res.status(400).send('Title is required');
+    return res.status(400).json({ error: { message: 'Title is required.' } });
   }
 
   if ( !url ) {
     logger.error('url is required');
-    return res.status(400).send('url is required');
+    return res.status(400).json({ error: { message: 'URL is required.' } });
   }
 
   if ( rating < 1 || rating > 5 ) {
     logger.error('Rating should be an integer of 1-5');
-    return res.status(400).send('Rating should be a number including only 1-5');
+    return res.status(400).json({ error: { message: 'Rating should be an integer between 1 and 5' } });
   }
 
   const newId = uuid();
