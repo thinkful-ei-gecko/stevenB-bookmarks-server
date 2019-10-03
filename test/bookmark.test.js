@@ -72,7 +72,24 @@ describe('Bookmarks endpoints', () => {
           expect(res.body.description).to.eql(newBookmark.description);
           expect(res.body.rating).to.eql(newBookmark.rating);
           expect(res.body).to.have.property('id');
-        });
+        })
+        .then( postRes => supertest(app)
+          .get(`/bookmarks/${postRes.body.id}`)
+          .expect(postRes.body)
+        );
+    });
+
+    it('should return a 404 status with missing information', () => {
+      const newBookmarkError = {
+        title: 'This will fail',
+        description: 'Oh god I forgot the url',
+        rating: '2'
+      };
+
+      return supertest(app)
+        .post('/bookmarks')
+        .send(newBookmarkError)
+        .expect(400, { error: { message: 'URL is required.' } });
     });
   });
 

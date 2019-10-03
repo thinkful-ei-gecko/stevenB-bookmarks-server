@@ -33,6 +33,7 @@ bookmarksRouter.get('/:id', ( req, res, next ) => {
 
 bookmarksRouter.post('/', ( req, res, next ) => {
   const { title, url, description, rating } = req.body;
+  const newBookmark = { title, url, description, rating };
 
   if ( !title ) {
     logger.error('Title is required');
@@ -49,21 +50,11 @@ bookmarksRouter.post('/', ( req, res, next ) => {
     return res.status(400).json({ error: { message: 'Rating should be an integer between 1 and 5' } });
   }
 
-  const newId = uuid();
+  logger.info(`Bookmark with title ${title} created`);
 
-  const newBookmark = {
-    newId,
-    title,
-    url,
-    description,
-    rating
-  };
-
-  bookmarks.push(newBookmark);
-
-  logger.info(`Bookmark with id ${newId} created`);
-
-  res.status(201).location(`http://localhost:${PORT}/card/${newId}`).json(newBookmark);
+  BookmarksService.insertBookmark( req.app.get('db'), newBookmark)
+    .then( bookmark => res.status(201).location(`/bookmarks/${bookmark.id}`).json(bookmark))
+    .catch(next);
 });
 
 bookmarksRouter.delete('/:id', ( req, res ) => {
