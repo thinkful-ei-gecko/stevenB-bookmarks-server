@@ -1,9 +1,9 @@
-const bookmark_itemsService = {
-  getAllArticles(db) {
+const BookmarksService = {
+  getAllBookmarks(db) {
     return db.select('*').from('bookmark_items');
   },
 
-  insertArticle(db, newBookmark) {
+  insertBookmark(db, newBookmark) {
     return db
       .insert(newBookmark)
       .into('bookmark_items')
@@ -15,13 +15,13 @@ const bookmark_itemsService = {
     return db.from('bookmark_items').select('*').where({ id }).first();
   },
 
-  updateArticle(db, id, newBookmarkFields) {
+  updateBookmark(db, id, newBookmarkFields) {
     return db.from('bookmark_items').where({ id }).update(newBookmarkFields);
   },
 
-  deleteArticle(db, id) {
+  deleteBookmark(db, id) {
     return db.from('bookmark_items').where({ id }).delete();
   }
 };
 
-module.exports = bookmark_itemsService;
+module.exports = BookmarksService;
