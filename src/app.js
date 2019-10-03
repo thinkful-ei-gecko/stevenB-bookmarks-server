@@ -32,8 +32,8 @@ app.use(express.json());
 
 app.use('/bookmarks', bookmarksRouter);
 
-app.get('/', ( req, res ) => {
-  res.send('Hello world!');
+app.get('/', ( req, res, next ) => {
+  res.send('All bookmarks!');
 });
 
 app.use(function errorHandler( error, req, res, next ) {
