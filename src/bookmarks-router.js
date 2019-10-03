@@ -35,19 +35,13 @@ bookmarksRouter.post('/', ( req, res, next ) => {
   const { title, url, description, rating } = req.body;
   const newBookmark = { title, url, description, rating };
 
-  if ( !title ) {
-    logger.error('Title is required');
-    return res.status(400).json({ error: { message: 'Title is required.' } });
-  }
-
-  if ( !url ) {
-    logger.error('url is required');
-    return res.status(400).json({ error: { message: 'URL is required.' } });
-  }
-
-  if ( rating < 1 || rating > 5 ) {
-    logger.error('Rating should be an integer of 1-5');
-    return res.status(400).json({ error: { message: 'Rating should be an integer between 1 and 5' } });
+  for( const[key, value] of Object.entries(newBookmark) ) {
+    // eslint-disable-next-line eqeqeq
+    if( value == null ) {
+      return res.status(400).json({
+        error: { message: `Missing ${key} in request body.`}
+      });
+    }
   }
 
   logger.info(`Bookmark with title ${title} created`);

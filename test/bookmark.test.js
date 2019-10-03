@@ -89,7 +89,7 @@ describe('Bookmarks endpoints', () => {
       return supertest(app)
         .post('/bookmarks')
         .send(newBookmarkError)
-        .expect(400, { error: { message: 'URL is required.' } });
+        .expect(400, { error: { message: 'Missing url in request body.' } });
     });
   });
 
