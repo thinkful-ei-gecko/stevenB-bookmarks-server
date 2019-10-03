@@ -28,3 +28,7 @@
 {"message":"Unauthorized request received","level":"error"}
 {"message":"Bookmarks data accessed","level":"info"}
 {"message":"Bookmarks data accessed!","level":"info"}
+{"message":"Bookmarks data accessed!","level":"info"}
+{"level":"error"}
+{"level":"error"}
+{"message":"Bookmark with id 20 not found.","level":"error"}

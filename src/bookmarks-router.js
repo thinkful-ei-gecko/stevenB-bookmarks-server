@@ -16,16 +16,19 @@ bookmarksRouter.get('/', ( req, res, next ) => {
     .catch(next);
 });
 
-bookmarksRouter.get('/:id', ( req, res ) => {
+bookmarksRouter.get('/:id', ( req, res, next ) => {
+  const knexInstance = req.app.get('db');
   const { id } = req.params;
-  const searchBookmark = bookmarks.find( b => b.id === id );
-
-  if ( !searchBookmark ) {
-    logger.error(`Bookmark with id ${id} not found.`);
-    return res.status(404).send('Bookmark Not Found');
-  }
-
-  res.send(searchBookmark);
+  
+  BookmarksService.getById(knexInstance, id)
+    .then( bookmark => {
+      if ( !bookmark ) {
+        logger.error(`Bookmark with id ${id} not found.`);
+        return res.status(404).send('Bookmark Not Found');
+      }
+      res.json( bookmark );
+    })
+    .catch(next);
 });
 
 bookmarksRouter.post('/', ( req, res ) => {
