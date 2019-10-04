@@ -19,7 +19,7 @@ describe('Bookmarks endpoints', () => {
 
   afterEach('cleanup', () => db('bookmark_items').truncate() );
 
-  context('/GET request', () => {
+  describe('/GET request', () => {
     it('should return an empty array when no data is present', () => {
       const expected = [];
       return supertest(app)
@@ -53,7 +53,7 @@ describe('Bookmarks endpoints', () => {
     });
   });
 
-  context('/POST request', () => {
+  describe('/POST request', () => {
     it('creates an article, responds with 201 and the new bookmark', () => {
       const newBookmark = {
         title: 'Test Post',
@@ -152,6 +152,30 @@ describe('Bookmarks endpoints', () => {
         return supertest(app)
           .delete('/bookmarks/2')
           .expect(404, { error: { message: 'Not Found' }});
+      });
+    });
+  });
+
+  describe('GET /bookmarks/:id sanitization', () => {
+    context('Given an XSS attack bookmark', () => {
+      const maliciousBookmark = {
+        id: 911,
+        title: 'Naughty naughty very naughty <script>alert(\'xss\');</script>',
+        url: 'https://www.youbeenhackedlol.com',
+        description: 'Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.',
+        rating: '4'
+      };
+
+      beforeEach('insert malicious bookmark', () => db.into('bookmark_items')).insert(maliciousBookmark);
+
+      it('removes XSS attack content', () => {
+        return supertest(app)
+          .get(`/bookmarks/${maliciousBookmark.id}`)
+          .expect(200)
+          .expect( res => {
+            expect( res.body.title ).to.eql( 'Naughty naughty very naughty &lt;script&gt;alert(\'xss\');&lt;/script&gt;' );
+            expect( res.body.description ).to.eql( 'Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.' );
+          });
       });
     });
   });
