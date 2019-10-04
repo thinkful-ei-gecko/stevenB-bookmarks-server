@@ -104,6 +104,11 @@ describe('Bookmarks endpoints', () => {
         url: 'https://www.test.com',
         rating: '-1'
       };
+      const highRating = {
+        title: 'This will fail',
+        url: 'https://www.test.com',
+        rating: '6'
+      };
       
       it('should return a 400 and appropriate error message with a rating < 1', () => {
         return supertest(app)
@@ -111,12 +116,6 @@ describe('Bookmarks endpoints', () => {
           .send(lowRating)
           .expect(400, { error: { message: 'Rating must be between 1 and 5' } });
       });
-
-      const highRating = {
-        title: 'This will fail',
-        url: 'https://www.test.com',
-        rating: '6'
-      };
 
       it('should return a 400 and appropriate error message with a rating > 5', () => {
         return supertest(app)
@@ -127,7 +126,33 @@ describe('Bookmarks endpoints', () => {
     });
   });
 
-  context('/DELETE request', () => {
-    
+  describe('/DELETE request', () => {
+    context('Given there are bookmarks in the database', () => {
+      beforeEach('add data to bookmarks test db', () => db.into('bookmark_items').insert(testBookmarks) );
+
+      it('responds with a 204 code and removes the bookmark', () => {
+        const id = 3;
+        const expectedBookmarks = testBookmarks.filter( bookmark => bookmark.id !== id );
+
+        return supertest(app)
+          .delete(`/bookmarks/${id}`)
+          .expect(204)
+          .then( () => supertest(app).get('/bookmarks').expect(expectedBookmarks));
+      });
+
+      it('Given a nonexistent id, will return 404 code and error', () => {
+        return supertest(app)
+          .delete('/bookmarks/10')
+          .expect(404, { error: { message: 'Not Found' }});
+      });
+    });
+
+    context('Given no bookmarks', () => {
+      it('Given no bookmarks will return with 404 code and error', () => {
+        return supertest(app)
+          .delete('/bookmarks/2')
+          .expect(404, { error: { message: 'Not Found' }});
+      });
+    });
   });
 });
