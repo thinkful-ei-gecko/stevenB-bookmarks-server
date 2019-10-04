@@ -30,7 +30,7 @@ app.use(express.json());
   next();
 }); */
 
-app.use('/bookmarks', bookmarksRouter);
+app.use('/api/bookmarks', bookmarksRouter);
 
 app.get('/', ( req, res, next ) => {
   res.send('Hello World!');

@@ -66,7 +66,7 @@ bookmarksRouter.post('/', ( req, res, next ) => {
 
   BookmarksService.insertBookmark( req.app.get('db'), sanitizedNewBookmark)
     .then( bookmark => res.status(201)
-      .location(`/bookmarks/${bookmark.id}`)
+      .location( req.originalUrl + `/${bookmark.id}` )
       .json({
         id: bookmark.id,
         title: xss(bookmark.title),
