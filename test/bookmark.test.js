@@ -163,7 +163,25 @@ describe('Bookmarks endpoints', () => {
         
         return supertest(app)
           .patch(`/api/bookmarks/${bookmarkId}`)
-          .expect(404, { error: { message: 'Bookmark doesn\'t exist' }});
+          .expect(404, { error: { message: 'Not Found' }});
+      });
+    });
+
+    context('Given bookmarks in database', () => {
+      beforeEach('populate database', () => db.into('bookmark_items').insert(testBookmarks));
+
+      it('responds with 204 and updates the bookmark', () => {
+        const idToUpdate = 3;
+        const testUpdate = {
+          title: 'This should update...',
+          url: 'https://www.test.com',
+          rating: '4'
+        };
+
+        return supertest(app)
+          .patch(`/api/bookmarks/${idToUpdate}`)
+          .send(testUpdate)
+          .expect(204);
       });
     });
   });
