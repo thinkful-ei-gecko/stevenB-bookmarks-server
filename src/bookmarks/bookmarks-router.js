@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const xss = require('xss');
 const logger = require('../logger');
@@ -66,7 +67,7 @@ bookmarksRouter.post('/', ( req, res, next ) => {
 
   BookmarksService.insertBookmark( req.app.get('db'), sanitizedNewBookmark)
     .then( bookmark => res.status(201)
-      .location( req.originalUrl + `/${bookmark.id}` )
+      .location( path.posix.join(req.originalUrl) + `/${bookmark.id}` )
       .json({
         id: bookmark.id,
         title: xss(bookmark.title),

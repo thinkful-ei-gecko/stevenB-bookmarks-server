@@ -156,6 +156,18 @@ describe('Bookmarks endpoints', () => {
     });
   });
 
+  describe('PATCH /api/bookmarks/:id', () => {
+    context('Given no bookmarks', () => {
+      it('responds with a 404 code and error', () => {
+        const bookmarkId = 123456;
+        
+        return supertest(app)
+          .patch(`/api/bookmarks/${bookmarkId}`)
+          .expect(404, { error: { message: 'Bookmark doesn\'t exist' }});
+      });
+    });
+  });
+
   describe('GET /api/bookmarks/:id sanitization', () => {
     context('Given an XSS attack bookmark', () => {
       const maliciousBookmark = {
