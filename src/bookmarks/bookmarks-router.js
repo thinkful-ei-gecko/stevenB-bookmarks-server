@@ -6,6 +6,14 @@ const logger = require('../logger');
 const bookmarksRouter = express.Router();
 const BookmarksService = require('./bookmarks-service');
 
+const sterilizeBookmark = bookmark => ({
+  id: bookmark.id,
+  title: xss(bookmark.title),
+  url: bookmark.url,
+  description: xss(bookmark.description),
+  rating: Number(bookmark.rating),
+});
+
 bookmarksRouter.get('/', ( req, res, next ) => {
   logger.info('Bookmarks data accessed!');
   const knexInstance = req.app.get('db');
@@ -24,13 +32,7 @@ bookmarksRouter.get('/:id', ( req, res, next ) => {
         logger.error(`Bookmark with id ${id} not found.`);
         return res.status(404).json({ error: { message: 'Bookmark with id 20 not found.' } });
       }
-      res.json({
-        id: bookmark.id,
-        title: xss(bookmark.title),
-        url: xss(bookmark.url),
-        description: xss(bookmark.description),
-        rating: bookmark.rating
-      });
+      res.json(sterilizeBookmark(bookmark));
     })
     .catch(next);
 });
@@ -57,24 +59,11 @@ bookmarksRouter.post('/', ( req, res, next ) => {
 
   logger.info(`Bookmark with title ${title} created`);
 
-  const sanitizedNewBookmark = {
-    title: xss(newBookmark.title),
-    url: xss(newBookmark.url),
-    description: xss(newBookmark.description),
-    rating: newBookmark.rating
-  };
-  
-
+  const sanitizedNewBookmark = sterilizeBookmark(newBookmark);
   BookmarksService.insertBookmark( req.app.get('db'), sanitizedNewBookmark)
     .then( bookmark => res.status(201)
       .location( path.posix.join(req.originalUrl) + `/${bookmark.id}` )
-      .json({
-        id: bookmark.id,
-        title: xss(bookmark.title),
-        url: xss(bookmark.url),
-        description: xss(bookmark.description),
-        rating: bookmark.rating
-      }))
+      .json(sterilizeBookmark(bookmark)))
     .catch(next);
 });
 
@@ -93,14 +82,38 @@ bookmarksRouter.route('/:id')
       })
       .catch(next);
   })
+  .get(( req, res ) => {
+    res.json(sterilizeBookmark(res.bookmark));
+  })
   .delete(( req, res, next ) => {
     const knexInstance = req.app.get('db');
     const { id } = req.params;
     BookmarksService.deleteBookmark( knexInstance, id)
-      .then( () => res.status(204).end() )
+      .then( numRowsAffected => {
+        logger.info(`Bookmark with id ${id} deleted.`);
+        res.status(204).end();
+      })
       .catch(next);
+  })
+  .patch(( req, res, next ) => {
+    const knexInstance = req.app.get('db');
+    const { id } = req.params;
+    const { title, url, description, rating } = req.body;
+    const bookmarkToUpdate = { title, url, description, rating };
 
-    logger.info(`Bookmark with id ${id} deleted.`);
+    const numberOfValues = Object.values(bookmarkToUpdate).filter(Boolean).length;
+    if ( numberOfValues === 0 ) {
+      return res.status(400).json({ 
+        error: { message: 'Request body must contain either "title", "url", "description" or "rating"' }
+      });
+    }
+
+    BookmarksService.updateBookmark( knexInstance, id, bookmarkToUpdate )
+      .then( numRowsAffected => {
+        logger.info(`Bookmark with id ${id} updated.`);
+        res.status(204).end();
+      })
+      .catch(next);
   });
 
 

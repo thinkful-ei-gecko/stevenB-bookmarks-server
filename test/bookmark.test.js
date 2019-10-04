@@ -13,11 +13,11 @@ describe('Bookmarks endpoints', () => {
     app.set('db', db);
   });
 
-  after('disconnect from db', () => db.destroy() );
-
   before('clean the table', () => db('bookmark_items').truncate() );
 
   afterEach('cleanup', () => db('bookmark_items').truncate() );
+
+  after('disconnect from db', () => db.destroy() );
 
   describe('/GET request', () => {
     it('should return an empty array when no data is present', () => {
@@ -59,7 +59,7 @@ describe('Bookmarks endpoints', () => {
         title: 'Test Post',
         url: 'https://www.imatest.com',
         description: 'Hello I am a test',
-        rating: '3'
+        rating: 3
       };
 
       return supertest(app)
@@ -177,11 +177,28 @@ describe('Bookmarks endpoints', () => {
           url: 'https://www.test.com',
           rating: '4'
         };
+        const updatedExpectedBookmark = {
+          ...testBookmarks[idToUpdate - 1],
+          ...testUpdate
+        };
 
         return supertest(app)
           .patch(`/api/bookmarks/${idToUpdate}`)
           .send(testUpdate)
-          .expect(204);
+          .expect(204)
+          .then( () => {
+            supertest(app)
+              .get(`/api/bookmarks/${idToUpdate}`)
+              .expect(updatedExpectedBookmark);
+          });
+      });
+
+      it('responds with a 400 code when no required fields supplied', () => {
+        const idToUpdate = 3;
+        return supertest(app)
+          .patch(`/api/bookmarks/${idToUpdate}`)
+          .send({ InvalidFoo: 'foo' })
+          .expect( 400, { error: { message: 'Request body must contain either "title", "url", "description" or "rating"' }});
       });
     });
   });
