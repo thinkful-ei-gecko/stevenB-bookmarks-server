@@ -23,7 +23,13 @@ bookmarksRouter.get('/:id', ( req, res, next ) => {
         logger.error(`Bookmark with id ${id} not found.`);
         return res.status(404).json({ error: { message: 'Bookmark with id 20 not found.' } });
       }
-      res.json( bookmark );
+      res.json({
+        id: bookmark.id,
+        title: xss(bookmark.title),
+        url: xss(bookmark.url),
+        description: xss(bookmark.description),
+        rating: bookmark.rating
+      });
     })
     .catch(next);
 });
@@ -50,8 +56,24 @@ bookmarksRouter.post('/', ( req, res, next ) => {
 
   logger.info(`Bookmark with title ${title} created`);
 
-  BookmarksService.insertBookmark( req.app.get('db'), newBookmark)
-    .then( bookmark => res.status(201).location(`/bookmarks/${bookmark.id}`).json(bookmark))
+  const sanitizedNewBookmark = {
+    title: xss(newBookmark.title),
+    url: xss(newBookmark.url),
+    description: xss(newBookmark.description),
+    rating: newBookmark.rating
+  };
+  
+
+  BookmarksService.insertBookmark( req.app.get('db'), sanitizedNewBookmark)
+    .then( bookmark => res.status(201)
+      .location(`/bookmarks/${bookmark.id}`)
+      .json({
+        id: bookmark.id,
+        title: xss(bookmark.title),
+        url: xss(bookmark.url),
+        description: xss(bookmark.description),
+        rating: bookmark.rating
+      }))
     .catch(next);
 });
 

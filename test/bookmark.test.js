@@ -166,7 +166,7 @@ describe('Bookmarks endpoints', () => {
         rating: '4'
       };
 
-      beforeEach('insert malicious bookmark', () => db.into('bookmark_items')).insert(maliciousBookmark);
+      beforeEach('insert malicious bookmark', () => db.into('bookmark_items').insert([ maliciousBookmark ]));
 
       it('removes XSS attack content', () => {
         return supertest(app)
