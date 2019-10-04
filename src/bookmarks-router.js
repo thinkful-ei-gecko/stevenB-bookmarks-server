@@ -35,13 +35,20 @@ bookmarksRouter.post('/', ( req, res, next ) => {
   const { title, url, description, rating } = req.body;
   const newBookmark = { title, url, description, rating };
 
-  for( const[key, value] of Object.entries(newBookmark) ) {
+  const requiredFields = { title, url, rating };
+  for( const[key, value] of Object.entries(requiredFields) ) {
     // eslint-disable-next-line eqeqeq
     if( value == null ) {
       return res.status(400).json({
         error: { message: `Missing ${key} in request body.`}
       });
     }
+  }
+
+  if( rating < 1 || rating > 5 ) {
+    return res.status(400).json({
+      error: { message: 'Rating must be between 1 and 5' }
+    });
   }
 
   logger.info(`Bookmark with title ${title} created`);
@@ -51,9 +58,9 @@ bookmarksRouter.post('/', ( req, res, next ) => {
     .catch(next);
 });
 
-bookmarksRouter.delete('/:id', ( req, res ) => {
+bookmarksRouter.delete('/:id', ( req, res, next ) => {
   const { id } = req.params;
-  const bookmarkFinder = bookmarks.findIndex( b => b.id === id );
+  const bookmarkFinder = BookmarksService.getById( req.app.get('db'), id);
 
   if ( bookmarkFinder === -1 ) {
     logger.error(`Bookmark with id ${id} not found`);
@@ -63,7 +70,9 @@ bookmarksRouter.delete('/:id', ( req, res ) => {
   bookmarks.splice( bookmarkFinder, 1 );
 
   logger.info(`Bookmark with id ${id} deleted.`);
-  res.status(204).end();
+  BookmarksService.deleteBookmark( req.app.get('db'), id)
+    .then( () => res.status(204).end() )
+    .catch(next);
 });
 
 

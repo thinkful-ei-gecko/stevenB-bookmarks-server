@@ -79,21 +79,55 @@ describe('Bookmarks endpoints', () => {
         );
     });
 
-    it('should return a 404 status with missing information', () => {
+    const requiredFields = ['title', 'url', 'rating'];
+
+    requiredFields.forEach( field => {
       const newBookmarkError = {
         title: 'This will fail',
-        description: 'Oh god I forgot the url',
+        url: 'https://www.test.com',
         rating: '2'
       };
+      
+      it(`should return a 404 status with ${field} missing`, () => {
+        delete newBookmarkError[field];
 
-      return supertest(app)
-        .post('/bookmarks')
-        .send(newBookmarkError)
-        .expect(400, { error: { message: 'Missing url in request body.' } });
+        return supertest(app)
+          .post('/bookmarks')
+          .send(newBookmarkError)
+          .expect(400, { error: { message: `Missing ${field} in request body.` } });
+      });
+    });
+
+    context('should return 400 when rating is < 1 or > 5', () => {
+      const lowRating = {
+        title: 'This will fail',
+        url: 'https://www.test.com',
+        rating: '-1'
+      };
+      
+      it('should return a 400 and appropriate error message with a rating < 1', () => {
+        return supertest(app)
+          .post('/bookmarks')
+          .send(lowRating)
+          .expect(400, { error: { message: 'Rating must be between 1 and 5' } });
+      });
+
+      const highRating = {
+        title: 'This will fail',
+        url: 'https://www.test.com',
+        rating: '6'
+      };
+
+      it('should return a 400 and appropriate error message with a rating > 5', () => {
+        return supertest(app)
+          .post('/bookmarks')
+          .send(highRating)
+          .expect(400, { error: { message: 'Rating must be between 1 and 5' } });
+      });
     });
   });
 
   context('/DELETE request', () => {
-
+    
   });
 });
